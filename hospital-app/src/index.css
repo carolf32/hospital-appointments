@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+* {
+  font-family: "Outfit", sans-serif;
+}
+
+:root {
+  --color-primary: #5f6fff;
+}
+
+.active hr {
+  display: block;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
