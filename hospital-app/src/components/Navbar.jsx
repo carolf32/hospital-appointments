@@ -72,11 +72,53 @@ const Navbar = () => {
         ) : (
           <button
             onClick={() => navigate("/login")}
-            className="bg-[var(--color-primary)] text-white px-8 py-3 rounded-full font-light hidden md:block"
+            className="bg-[var(--color-primary)] cursor-pointer text-white px-8 py-3 rounded-full font-light hidden md:block"
           >
             Create account
           </button>
         )}
+        <img
+          className="w-6 md:hidden"
+          src={assets.menu_icon}
+          alt="Menu icon"
+          onClick={() => setShowMenu(true)}
+        />
+        {/* Mobile menu */}
+        <div
+          className={`${
+            showMenu ? "fixed w-full" : "h-0 w-0"
+          } md:hidden right-0 top-0 bottom-0 z-20 overflow-hidden bg-white transition-all`}
+        >
+          <div className="flex items-center justify-between px-5 py-6">
+            <p className="w-44 cursor-pointer font-bold text-2xl text-[var(--color-primary)]">
+              Hospital App
+            </p>
+            <img
+              className="w-7 cursor-pointer"
+              src={assets.cross_icon}
+              alt="Exit icon"
+              onClick={() => setShowMenu(false)}
+            />
+          </div>
+          <ul className="flex flex-col items-center gap-2 mt-5 px-5 text-lg font-medium">
+            <NavLink to="/" onClick={() => setShowMenu(false)}>
+              {" "}
+              <p className="px-4 py-2 rounded-full inline-block">Home</p>
+            </NavLink>
+            <NavLink to="/doctors" onClick={() => setShowMenu(false)}>
+              {" "}
+              <p className="px-4 py-2 rounded-full inline-block">ALL DOCTORS</p>
+            </NavLink>
+            <NavLink to="/about" onClick={() => setShowMenu(false)}>
+              {" "}
+              <p className="px-4 py-2 rounded-full inline-block">ABOUT</p>
+            </NavLink>
+            <NavLink to="/contact" onClick={() => setShowMenu(false)}>
+              {" "}
+              <p className="px-4 py-2 rounded-full inline-block">CONTACT</p>
+            </NavLink>
+          </ul>
+        </div>
       </div>
     </div>
   );
