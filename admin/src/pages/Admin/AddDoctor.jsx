@@ -1,6 +1,10 @@
 import React from "react";
 import { assets } from "../../assets/assets";
 import { useState } from "react";
+import { useContext } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { AdminContext } from "../../context/AdminContext";
 
 const AddDoctor = () => {
   const [docImg, setDocImg] = useState(false);
@@ -15,8 +19,53 @@ const AddDoctor = () => {
   const [address1, setAddress1] = useState("");
   const [address2, setAddress2] = useState("");
 
+  const { backendUrl, aToken } = useContext(AdminContext);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      if (!docImg) {
+        return toast.error("Image not selected");
+      }
+      const formData = new FormData();
+      formData.append("image", docImg);
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("experience", experience);
+      formData.append("fees", Number(fees));
+      formData.append("about", about);
+      formData.append("speciality", speciality);
+      formData.append("degree", degree);
+      formData.append(
+        "address",
+        JSON.stringify({ line1: address1, line2: address2 })
+      );
+
+      const { data } = await axios.post(
+        backendUrl + "/api/admin/add-doctor",
+        formData,
+        { headers: { aToken } }
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        setDocImg(false);
+        setName("");
+        setPassword("");
+        setEmail("");
+        setAddress1("");
+        setAddress2("");
+        setDegree("");
+        setAbout("");
+        setFees("");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (err) {
+      toast.error(err.message);
+      console.log(err);
+    }
   };
 
   return (
