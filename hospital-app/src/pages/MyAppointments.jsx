@@ -4,9 +4,30 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const MyAppointments = () => {
-  const { backendUrl, token } = useContext(AppContext);
+  const { backendUrl, token, getDoctorsData } = useContext(AppContext);
 
   const [appointments, setAppointments] = useState([]);
+  const months = [
+    "",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const slotDateFormat = (slotDate) => {
+    const dateArray = slotDate.split("_");
+    return (
+      dateArray[0] + " " + months[Number(dateArray[1])] + " " + dateArray[2]
+    );
+  };
 
   const getUserAppointments = async () => {
     try {
@@ -15,6 +36,26 @@ const MyAppointments = () => {
       });
       if (data.success) {
         setAppointments(data.appointments.reverse());
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error(err.message);
+    }
+  };
+
+  const cancelAppointment = async (appointmentId) => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/api/user/cancel-appointment",
+        { appointmentId },
+        { headers: { token } }
+      );
+      if (data.success) {
+        toast.success(data.message);
+        getUserAppointments();
+        getDoctorsData();
+      } else {
+        toast.error(data.message);
       }
     } catch (err) {
       console.log(err);
@@ -58,17 +99,29 @@ const MyAppointments = () => {
                 <span className="text-sm text-neutral-700 font-medium">
                   Date & Time:
                 </span>{" "}
-                {item.slotDate} | {item.slotTime}{" "}
+                {slotDateFormat(item.slotDate)} | {item.slotTime}{" "}
               </p>
             </div>
             <div></div>
             <div className="flex flex-col gap-2 justify-end">
-              <button className="hover:bg-[var(--color-primary)] hover:text-white transition-all duration-300 text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded  cursor-pointer">
-                Pay online
-              </button>
-              <button className="text-sm cursor-pointer hover:bg-red-600 hover:text-white transition-all duration-300 text-stone-500 text-center sm:min-w-48 py-2 border rounded ">
-                Cancel appointment
-              </button>
+              {!item.cancelled && (
+                <button className="hover:bg-[var(--color-primary)] hover:text-white transition-all duration-300 text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded  cursor-pointer">
+                  Pay online
+                </button>
+              )}
+              {!item.cancelled && (
+                <button
+                  className="text-sm cursor-pointer hover:bg-red-600 hover:text-white transition-all duration-300 text-stone-500 text-center sm:min-w-48 py-2 border rounded "
+                  onClick={() => cancelAppointment(item._id)}
+                >
+                  Cancel appointment
+                </button>
+              )}
+              {item.cancelled && (
+                <p className="sm:min-w-48 py-2 border border-red-500 rounded text-red-500">
+                  Appointment Cancelled
+                </p>
+              )}
             </div>
           </div>
         ))}
