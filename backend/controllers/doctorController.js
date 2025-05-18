@@ -62,4 +62,51 @@ const appointmentsDoctor = async (req, res) => {
   }
 };
 
-export { changeAvailability, doctorList, loginDoctor, appointmentsDoctor };
+const appointmentComplete = async (req, res) => {
+  try {
+    const { docId, appointmentId } = req.body;
+
+    const appointmentData = await appointmentModel.findById(appointmentId);
+
+    if (appointmentData && appointmentData.docId === docId) {
+      await appointmentsModel.findByIdAndUpdate(appointmentId, {
+        isCompleted: true,
+      });
+      return res.json({ success: true, message: "Appointment completed" });
+    } else {
+      res.json({ success: false, message: "Mark failed" });
+    }
+  } catch (err) {
+    console.log(err);
+    res.json({ success: false, message: err.message });
+  }
+};
+
+const appointmentCancel = async (req, res) => {
+  try {
+    const { docId, appointmentId } = req.body;
+
+    const appointmentData = await appointmentModel.findById(appointmentId);
+
+    if (appointmentData && appointmentData.docId === docId) {
+      await appointmentsModel.findByIdAndUpdate(appointmentId, {
+        cancelled: true,
+      });
+      return res.json({ success: true, message: "Appointment cancelled" });
+    } else {
+      res.json({ success: false, message: "Cancellation failed" });
+    }
+  } catch (err) {
+    console.log(err);
+    res.json({ success: false, message: err.message });
+  }
+};
+
+export {
+  changeAvailability,
+  doctorList,
+  loginDoctor,
+  appointmentsDoctor,
+  appointmentComplete,
+  appointmentCancel,
+};
