@@ -1,7 +1,7 @@
 import doctorModel from "../models/doctorModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import appointmentsModel from "../models/appointmentModel.js";
+import appointmentModel from "../models/appointmentModel.js";
 
 const changeAvailability = async (req, res) => {
   try {
@@ -53,7 +53,7 @@ const loginDoctor = async (req, res) => {
 const appointmentsDoctor = async (req, res) => {
   try {
     const { docId } = req.body;
-    const appointments = await appointmentsModel.find({ docId });
+    const appointments = await appointmentModel.find({ docId });
 
     res.json({ success: true, appointments });
   } catch (err) {
@@ -69,7 +69,7 @@ const appointmentComplete = async (req, res) => {
     const appointmentData = await appointmentModel.findById(appointmentId);
 
     if (appointmentData && appointmentData.docId === docId) {
-      await appointmentsModel.findByIdAndUpdate(appointmentId, {
+      await appointmentModel.findByIdAndUpdate(appointmentId, {
         isCompleted: true,
       });
       return res.json({ success: true, message: "Appointment completed" });
@@ -89,13 +89,68 @@ const appointmentCancel = async (req, res) => {
     const appointmentData = await appointmentModel.findById(appointmentId);
 
     if (appointmentData && appointmentData.docId === docId) {
-      await appointmentsModel.findByIdAndUpdate(appointmentId, {
+      await appointmentModel.findByIdAndUpdate(appointmentId, {
         cancelled: true,
       });
       return res.json({ success: true, message: "Appointment cancelled" });
     } else {
       res.json({ success: false, message: "Cancellation failed" });
     }
+  } catch (err) {
+    console.log(err);
+    res.json({ success: false, message: err.message });
+  }
+};
+
+const doctorDashboard = async (req, res) => {
+  try {
+    const { docId } = req.body;
+    const appointments = await appointmentModel.find({ docId });
+    let earnings = 0;
+    appointments.map((item) => {
+      if (item.isCompleted || item.payment) {
+        earnings += item.amount;
+      }
+    });
+
+    let patients = [];
+    appointments.map((item) => {
+      if (!patients.includes(item.userId)) {
+        patients.push(item.userId);
+      }
+    });
+
+    const dashData = {
+      earnings,
+      appointments: appointments.length,
+      patients: patients.length,
+      latestAppointments: appointments.reverse().slice(0, 5),
+    };
+
+    res.json({ success: true, dashData });
+  } catch (err) {
+    console.log(err);
+    res.json({ success: false, message: err.message });
+  }
+};
+
+const doctorProfile = async (req, res) => {
+  try {
+    const { docId } = req.body;
+    const profileData = await doctorModel.findById(docId).select("-password");
+
+    res.json({ success: true, profileData });
+  } catch (err) {
+    console.log(err);
+    res.json({ success: false, message: err.message });
+  }
+};
+
+const updateDoctorProfile = async (req, res) => {
+  try {
+    const { docId, fees, address, available } = req.body;
+    await doctorModel.findByIdAndUpdate(docId, { fees, address, available });
+    res.json({ success: true, message: "Profile updated" });
   } catch (err) {
     console.log(err);
     res.json({ success: false, message: err.message });
@@ -109,4 +164,7 @@ export {
   appointmentsDoctor,
   appointmentComplete,
   appointmentCancel,
+  doctorDashboard,
+  doctorProfile,
+  updateDoctorProfile,
 };
