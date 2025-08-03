@@ -6,8 +6,6 @@ Frontend: React.js, React Router DOM, Axios, React Toastify, Tailwind CSS
 
 Backend: Node.js, Express.js, MongoDB, Mongoose
 
-Authentication: JWT (JSON Web Tokens)
-
 Language: Javascript
 
 ## Features for Each Role
