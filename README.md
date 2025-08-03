@@ -60,3 +60,8 @@ College projects
 Learning and practicing full-stack development
 
 Real-world web application simulations
+
+
+<img width="1826" height="813" alt="app1" src="https://github.com/user-attachments/assets/6859a003-acfa-4fd8-a17a-7e37a0a24fa5" />
+<img width="1467" height="391" alt="app2" src="https://github.com/user-attachments/assets/40289a8f-1986-436a-a8c0-74a6efa17097" />
+<img width="1660" height="832" alt="app3" src="https://github.com/user-attachments/assets/4500ca6a-ae12-40d0-8bbf-6ecb7a9280eb" />
